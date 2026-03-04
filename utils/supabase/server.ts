@@ -1,0 +1,31 @@
+import { createServerClient, type CookieOptions } from "@supabase/ssr";
+import { cookies } from "next/headers";
+
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY;
+
+export const createClient = async (
+  cookieStoreOrPromise:
+    | ReturnType<typeof cookies>
+    | Promise<ReturnType<typeof cookies>>,
+) => {
+  const cookieStore = await cookieStoreOrPromise; // <-- await here
+
+  return createServerClient(supabaseUrl!, supabaseKey!, {
+    cookies: {
+      getAll() {
+        return cookieStore.getAll();
+      },
+      setAll(cookiesToSet) {
+        try {
+          cookiesToSet.forEach(({ name, value, options }) =>
+            // cookieStore.set exists on the resolved object
+            (cookieStore as any).set(name, value, options),
+          );
+        } catch {
+          // ignore when called from a Server Component
+        }
+      },
+    },
+  });
+};

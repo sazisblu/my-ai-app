@@ -73,11 +73,16 @@ interface WeatherData {
 
 export async function POST(req: Request) {
   const { messages }: { messages: UIMessage[] } = await req.json();
-
+  //  this simply creates a local const called messages with the propey value of the key with same name that is messages.
+  // we can understand this sytax better using a longer hand notation
+  // explicit two-step (equivalent)
+  // const body = (await req.json()) as { messages: UIMessage[] };
+  // const messages: UIMessage[] = body.messages;
   let setpcounter = 0;
   const result = streamText({
     model: google("gemini-2.5-flash-lite"),
     messages: await convertToModelMessages(messages),
+    // convertToModelMessages coverts the messages into form accepted by model since the model may need to do some asynchronous tasks during conversion. Hence, await is used so that model is not called before the conversion finishes
     stopWhen: stepCountIs(5),
     tools: {
       weather: tool({
