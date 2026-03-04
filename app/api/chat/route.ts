@@ -81,7 +81,8 @@ export async function POST(req: Request) {
     stopWhen: stepCountIs(5),
     tools: {
       weather: tool({
-        description: "Get the weather in a location (fahrenheit)",
+        description:
+          "Get the weather in a location.Temperature(celcius),Humidity,Pressure and sea level",
         inputSchema: z.object({
           location: z.string().describe("The location to get the weather for"),
         }),
